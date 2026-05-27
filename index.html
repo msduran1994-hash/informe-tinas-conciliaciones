@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Informe Ejecutivo · Conciliaciones de Inventario de Tinas 2025-2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="tinas-data.js"></script>
+<style>
+  :root{
+    --bg:#F4F5F8;
+    --panel:#FFFFFF;
+    --ink:#0B1320;
+    --ink-2:#3C475C;
+    --ink-3:#6B7793;
+    --line:#E5E8EF;
+    --line-2:#EDEFF4;
+    --brand:#0F1E3D;
+    --brand-2:#1B2E54;
+    --accent:#0E7C86;
+    --accent-2:#0FB5AE;
+    --amber:#E08A1A;
+    --amber-soft:#FFF6E5;
+    --green:#1F8A4C;
+    --green-soft:#E7F5EC;
+    --red:#C5364B;
+    --red-soft:#FCEBEE;
+    --violet:#6C4BD9;
+    --violet-soft:#EFEAFB;
+    --slate:#8693AC;
+    --chip:#F1F3F8;
+    --shadow:0 1px 0 rgba(15,30,61,.04), 0 8px 24px -16px rgba(15,30,61,.18);
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Manrope',ui-sans-serif,system-ui,sans-serif;font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+  button{font-family:inherit}
+  a{color:inherit}
+
+  /* shell */
+  .shell{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+  aside.nav{background:var(--brand);color:#cdd5e6;padding:18px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 6px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .brand-mark{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--accent-2),var(--accent));display:grid;place-items:center;color:#06222b;font-weight:800;font-size:15px}
+  .brand-name{font-weight:700;color:#fff;font-size:13px;letter-spacing:.02em;line-height:1.15}
+  .brand-sub{font-size:10.5px;color:#8a98b7;margin-top:2px}
+  .nav-section{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7c9a;padding:0 8px;margin:8px 0 2px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:#cdd5e6;cursor:pointer;font-size:12.5px;text-decoration:none}
+  .nav-item:hover{background:rgba(255,255,255,.04);color:#fff}
+  .nav-item.active{background:rgba(15,181,174,.12);color:#fff;box-shadow:inset 2px 0 0 var(--accent-2)}
+  .nav-item .dot{width:6px;height:6px;border-radius:50%;background:#4b5a7a}
+  .nav-item.active .dot{background:var(--accent-2)}
+  .nav-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:12px;color:#8a98b7;font-size:10.5px;line-height:1.55}
+  .nav-foot code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.06);padding:1px 4px;border-radius:3px;font-size:10px;color:#cdd5e6;display:inline-block;margin-top:4px}
+
+  main{padding:18px 22px 60px;min-width:0}
+  .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:14px}
+  .crumb{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.12em;font-weight:600}
+  h1{font-size:22px;margin:4px 0 0;font-weight:700;letter-spacing:-0.01em}
+  .topbar .sub{color:var(--ink-3);margin-top:4px;font-size:12.5px;max-width:780px}
+  .top-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;padding:7px 11px;border-radius:8px;color:var(--ink-2);cursor:pointer;font-size:12px;font-weight:500}
+  .btn:hover{border-color:#cbd2df}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .btn.primary:hover{background:#15264c}
+  .btn svg{width:13px;height:13px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;font-size:11px;border:1px solid var(--line);background:#fff;color:var(--ink-2)}
+  .pill .pulse{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(31,138,76,.4);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(31,138,76,.5)}70%{box-shadow:0 0 0 8px rgba(31,138,76,0)}100%{box-shadow:0 0 0 0 rgba(31,138,76,0)}}
+
+  /* filters */
+  .filters{display:grid;grid-template-columns:repeat(7,1fr) auto;gap:10px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .filter{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .filter label{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+  .filter select{appearance:none;border:1px solid var(--line);background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%236B7793' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 10px center;padding:8px 28px 8px 10px;border-radius:8px;font-size:12px;color:var(--ink);font-family:inherit;cursor:pointer;width:100%;text-overflow:ellipsis;overflow:hidden}
+  .filter select:focus{outline:none;border-color:var(--accent)}
+  .filters .reset{align-self:flex-end;padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--ink-2);cursor:pointer;font-size:12px;height:fit-content;font-family:inherit}
+  .filters .reset:hover{color:var(--red);border-color:#f1c5cd}
+  .active-filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px 2px;min-height:18px}
+  .active-chip{display:inline-flex;gap:5px;align-items:center;background:#eef5f6;color:#0d5860;border:1px solid #c8e0e2;padding:3px 8px 3px 9px;border-radius:999px;font-size:11px}
+  .active-chip button{background:none;border:0;color:#0d5860;cursor:pointer;padding:0 0 0 2px;font-size:13px;line-height:1}
+
+  /* KPIs */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:14px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;min-height:118px}
+  .kpi .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);font-weight:600}
+  .kpi .value{font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-top:6px;line-height:1.1}
+  .kpi .meta{margin-top:10px;display:flex;justify-content:space-between;align-items:center;color:var(--ink-3);font-size:11.5px;line-height:1.4}
+  .kpi .bar{margin-top:10px;height:5px;background:var(--line-2);border-radius:3px;overflow:hidden}
+  .kpi .bar > div{height:100%;border-radius:3px;background:var(--brand)}
+  .kpi .ico{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:800;background:#F1F3F8;color:var(--ink-2);font-family:'JetBrains Mono',monospace}
+  .kpi.hero{background:linear-gradient(135deg,#0F1E3D,#152957);color:#fff;border-color:transparent}
+  .kpi.hero .label,.kpi.hero .meta{color:#9fb1d6}
+  .kpi.hero .bar{background:rgba(255,255,255,.14)} .kpi.hero .bar > div{background:#0FB5AE}
+  .kpi.hero .ico{background:rgba(255,255,255,.12);color:#fff}
+  .kpi.danger{background:linear-gradient(135deg,#7d1b2a,#a82541);color:#fff;border-color:transparent}
+  .kpi.danger .label,.kpi.danger .meta{color:#f3c7cf}
+  .kpi.danger .bar{background:rgba(255,255,255,.15)} .kpi.danger .bar > div{background:#fff}
+  .kpi.danger .ico{background:rgba(255,255,255,.18);color:#fff}
+  .kpi.good .bar > div{background:var(--green)}
+  .kpi.good .ico{background:var(--green-soft);color:var(--green)}
+  .kpi.warn .bar > div{background:var(--amber)}
+  .kpi.warn .ico{background:var(--amber-soft);color:#9a5f10}
+  .kpi.info .bar > div{background:var(--accent)}
+  .kpi.info .ico{background:#e7f5f6;color:#0d5860}
+  .delta{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:6px;font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace}
+  .delta.up{background:var(--green-soft);color:var(--green)}
+  .delta.down{background:var(--red-soft);color:var(--red)}
+  .delta.flat{background:#eef0f5;color:var(--ink-3)}
+
+  /* sections */
+  section.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px}
+  .card-h{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px;gap:12px}
+  .card-h h2{font-size:14px;margin:0;font-weight:700;letter-spacing:.01em}
+  .card-h .h-sub{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+  .card-h .actions{display:flex;gap:6px;align-items:center}
+  .card-h .actions .pill{font-size:10.5px}
+  h3{font-size:12px;margin:0 0 8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2)}
+
+  /* grids */
+  .grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+  .grid-12-7{display:grid;grid-template-columns:7fr 5fr;gap:14px;margin-bottom:14px}
+
+  /* exec summary */
+  .exec-summary{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}
+  .exec-summary .narrative{font-size:13.5px;line-height:1.65;color:var(--ink-2)}
+  .exec-summary .narrative p{margin:0 0 10px}
+  .exec-summary .narrative strong{color:var(--ink);font-weight:700}
+  .exec-summary .narrative .num{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--ink)}
+  .verdict{background:#0F1E3D;color:#fff;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px}
+  .verdict .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:#9fb1d6;font-weight:600}
+  .verdict .grade{font-size:48px;font-weight:800;line-height:1;letter-spacing:-0.04em}
+  .verdict .grade .sub{font-size:14px;color:#9fb1d6;margin-left:8px;vertical-align:middle;letter-spacing:0}
+  .verdict ul{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+  .verdict li{font-size:12px;color:#cdd5e6;display:flex;align-items:center;gap:8px}
+  .verdict li .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-2);flex-shrink:0}
+  .verdict li.warn .dot{background:var(--amber)}
+  .verdict li.bad .dot{background:#f57f8c}
+
+  /* alerts */
+  .alerts{display:flex;flex-direction:column;gap:8px}
+  .alert{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:flex-start;padding:11px 12px;border-radius:8px;border:1px solid var(--line);background:#fff}
+  .alert.crit{background:var(--red-soft);border-color:#f1c8d0}
+  .alert.high{background:#fff6ec;border-color:#fbd9b3}
+  .alert.med{background:var(--amber-soft);border-color:#f1dfb3}
+  .alert.low{background:var(--green-soft);border-color:#cbe8d4}
+  .alert .lvl{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;color:#fff;flex-shrink:0;margin-top:1px}
+  .alert.crit .lvl{background:var(--red)}
+  .alert.high .lvl{background:#d97a1f}
+  .alert.med .lvl{background:var(--amber)}
+  .alert.low .lvl{background:var(--green)}
+  .alert .title{font-weight:700;font-size:12.5px;margin-bottom:3px;color:var(--ink)}
+  .alert .desc{font-size:11.5px;color:var(--ink-2);line-height:1.45}
+  .alert .desc .ref{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.6);padding:1px 5px;border-radius:3px;font-size:10.5px;color:var(--ink-2)}
+  .alert .meta-right{font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;text-align:right;flex-shrink:0}
+  .alert .meta-right .num{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);font-weight:700;display:block;letter-spacing:0}
+
+  /* charts */
+  .chart{width:100%;display:block}
+  .chart-wrap{position:relative}
+  .chart-legend{display:flex;gap:14px;font-size:11px;color:var(--ink-3);margin-top:6px;flex-wrap:wrap}
+  .chart-legend .lk{display:inline-flex;align-items:center;gap:5px}
+  .chart-legend .sw{width:10px;height:10px;border-radius:2px}
+  .axis-label{font-size:10px;fill:var(--ink-3);font-family:'JetBrains Mono',monospace}
+  .grid-line{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
+  .axis-line{stroke:#c5cdde;stroke-width:1}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  thead th{font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);padding:9px 10px;text-align:left;border-bottom:1.5px solid var(--line);background:#fafbfd;position:sticky;top:0}
+  tbody td{padding:9px 10px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+  tbody tr:hover{background:#fafbfd}
+  td.num,th.num{text-align:right;font-family:'JetBrains Mono',monospace}
+  td.code{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-2)}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:600}
+  .badge.ok{background:var(--green-soft);color:var(--green)}
+  .badge.leve{background:#eef5f6;color:#0d5860}
+  .badge.med{background:var(--amber-soft);color:#9a5f10}
+  .badge.crit{background:var(--red-soft);color:var(--red)}
+  .neg{color:var(--red);font-weight:600}
+  .pos{color:var(--green);font-weight:600}
+  .zero{color:var(--ink-3)}
+
+  /* table wrapper */
+  .table-wrap{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+  .table-wrap table thead th{background:#f6f7fa}
+
+  /* findings */
+  .findings{display:flex;flex-direction:column;gap:10px}
+  .finding{border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:8px;padding:12px 14px;background:#fff;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+  .finding.crit{border-left-color:var(--red);background:linear-gradient(to right,#fff8f9,#fff)}
+  .finding.high{border-left-color:#d97a1f;background:linear-gradient(to right,#fffaf2,#fff)}
+  .finding.med{border-left-color:var(--amber);background:linear-gradient(to right,#fffbf0,#fff)}
+  .finding.low{border-left-color:var(--green);background:linear-gradient(to right,#f5fbf7,#fff)}
+  .finding .rank{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;color:var(--ink-3);min-width:30px}
+  .finding .body .t{font-weight:700;font-size:12.5px;margin-bottom:3px}
+  .finding .body .d{font-size:11.5px;color:var(--ink-2);line-height:1.5}
+  .finding .body .tags{margin-top:6px;display:flex;gap:5px;flex-wrap:wrap}
+  .finding .body .tags span{font-size:10px;background:#f1f3f8;color:var(--ink-2);padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+  .finding .body .tags span.imp-alto{background:var(--red-soft);color:var(--red)}
+  .finding .body .tags span.imp-med{background:var(--amber-soft);color:#9a5f10}
+  .finding .impact{text-align:right;min-width:130px}
+  .finding .impact .v{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700}
+  .finding .impact .l{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600}
+
+  /* plan */
+  .plan-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+  .plan-tabs button{background:#f1f3f8;border:1px solid var(--line);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;color:var(--ink-2);font-weight:600}
+  .plan-tabs button.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+  /* heatmap */
+  .heatmap{display:grid;gap:2px;font-size:10.5px}
+  .heatmap .h-row{display:contents}
+  .heatmap .h-cell{padding:6px 4px;border-radius:3px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:600;min-height:26px;display:flex;align-items:center;justify-content:center;color:#fff;cursor:default;position:relative}
+  .heatmap .h-label{padding:6px 8px;font-size:11px;font-weight:600;color:var(--ink-2);text-align:right;white-space:nowrap}
+  .heatmap .h-col{padding:6px 4px;font-size:10px;color:var(--ink-3);text-align:center;font-family:'JetBrains Mono',monospace;font-weight:600;text-transform:uppercase}
+
+  /* diagnostic */
+  .diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .diag-block{background:#fafbfd;border:1px solid var(--line-2);border-radius:8px;padding:14px 16px}
+  .diag-block h3{margin-top:0}
+  .diag-block ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-2);line-height:1.6}
+  .diag-block ul li{margin-bottom:5px}
+  .diag-block .stat{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .diag-block .stat:last-of-type{border-bottom:0}
+  .diag-block .stat .k{color:var(--ink-3)}
+  .diag-block .stat .v{font-family:'JetBrains Mono',monospace;font-weight:600}
+
+  /* footer info */
+  .meta-foot{font-size:11px;color:var(--ink-3);padding:14px 0 0;border-top:1px solid var(--line);margin-top:6px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+  /* anchor offset for in-page nav */
+  section[id]{scroll-margin-top:14px}
+
+  .small-cap{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--ink-3)}
+
+  /* print */
+  @media print {
+    aside.nav{display:none}
+    .shell{display:block}
+    main{padding:0}
+    .filters,.top-actions,.plan-tabs{display:none}
+    section.card{break-inside:avoid;box-shadow:none;border-color:#ccc}
+    body{background:#fff}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="nav">
+    <div class="brand">
+      <div class="brand-mark">CT</div>
+      <div>
+        <div class="brand-name">Conciliación Tinas</div>
+        <div class="brand-sub">Informe Ejecutivo</div>
+      </div>
+    </div>
+    <div class="nav-section">Análisis</div>
+    <a class="nav-item active" href="#resumen"><span class="dot"></span>Resumen ejecutivo</a>
+    <a class="nav-item" href="#kpis"><span class="dot"></span>KPIs & semaforización</a>
+    <a class="nav-item" href="#alertas"><span class="dot"></span>Alertas automáticas</a>
+    <a class="nav-item" href="#comparativo"><span class="dot"></span>Comparativo 2025 / 2026</a>
+    <a class="nav-item" href="#tendencias"><span class="dot"></span>Tendencias</a>
+    <a class="nav-item" href="#cedis"><span class="dot"></span>Ranking por sede</a>
+    <a class="nav-item" href="#hallazgos"><span class="dot"></span>Hallazgos priorizados</a>
+    <a class="nav-item" href="#plan"><span class="dot"></span>Plan de acción</a>
+    <a class="nav-item" href="#diagnostico"><span class="dot"></span>Diagnóstico técnico</a>
+    <a class="nav-item" href="#detalle"><span class="dot"></span>Detalle consolidado</a>
+    <div class="nav-foot">
+      Fuente:
+      <code>Conciliaciones Inventario Tinas 2025.xlsx</code>
+      <code>Conciliaciones Inventario Tinas 2026.xlsx</code>
+      Hoja: <code>CONSOLIDADO TINAS</code>
+      <div style="margin-top:8px">Última conciliación cargada: <span id="meta-last" class="mono"></span></div>
+      <div>Filas consolidadas: <span id="meta-rows" class="mono"></span></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="crumb">Comité Gerencial · Operaciones / Logística</div>
+        <h1>Informe Ejecutivo · Conciliaciones de Inventario de Tinas</h1>
+        <div class="sub">Diagnóstico integrado <strong>2025 ↔ 2026</strong> sobre las hojas <em>CONSOLIDADO TINAS</em>. Validación de coherencia, faltantes, sobrantes y ajustes por sede, bodega e informe.</div>
+      </div>
+      <div class="top-actions">
+        <span class="pill"><span class="pulse"></span> Datos validados <span id="meta-rows-pill" class="mono"></span></span>
+        <button class="btn" onclick="window.print()" title="Exportar a PDF para comité">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6V2h8v4M4 12H2v-5h12v5h-2M4 9h8v5H4z"/></svg>
+          Imprimir / PDF
+        </button>
+        <button class="btn primary" id="btn-export-csv">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1v9m0 0L5 7m3 3l3-3M2 13h12"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters" id="filters">
+      <div class="filter">
+        <label>Año</label>
+        <select id="f-year"><option value="">Todos</option></select>
+      </div>
+      <div class="filter">
+        <label>Mes</label>
+        <select id="f-month"><option value="">Todos</option></select>
+      </div>
+      <div class="filter">
+        <label>Informe</label>
+        <select id="f-informe"><option value="">Todos</option></select>
+      </div>
+      <div class="filter">
+        <label>Sede / CEDI</label>
+        <select id="f-cedi"><option value="">Todos</option></select>
+      </div>
+      <div class="filter">
+        <label>Bodega</label>
+        <select id="f-bodega"><option value="">Todas</option></select>
+      </div>
+      <div class="filter">
+        <label>Tipo de diferencia</label>
+        <select id="f-tipo">
+          <option value="">Todos</option>
+          <option value="FALTANTE">Faltantes</option>
+          <option value="SOBRANTE">Sobrantes</option>
+          <option value="CUADRADO">Cuadrado (=0)</option>
+        </select>
+      </div>
+      <div class="filter">
+        <label>Estado</label>
+        <select id="f-estado">
+          <option value="">Todos</option>
+          <option value="OK">OK (sin diferencia)</option>
+          <option value="LEVE">Leve (≤5)</option>
+          <option value="MEDIO">Medio (≤50)</option>
+          <option value="CRITICO">Crítico (&gt;50)</option>
+        </select>
+      </div>
+      <button class="reset" id="btn-reset">Limpiar</button>
+    </div>
+    <div class="active-filters" id="active-filters"></div>
+
+    <!-- RESUMEN EJECUTIVO -->
+    <section class="card" id="resumen">
+      <div class="card-h">
+        <div>
+          <h2>Resumen ejecutivo</h2>
+          <div class="h-sub">Síntesis gerencial generada automáticamente sobre los <span id="rs-rows" class="mono"></span> registros consolidados.</div>
+        </div>
+        <div class="actions">
+          <span class="pill"><span class="pulse"></span> Auto-generado</span>
+        </div>
+      </div>
+      <div class="exec-summary">
+        <div class="narrative" id="narrative"></div>
+        <div class="verdict" id="verdict">
+          <div class="label">Veredicto gerencial</div>
+          <div class="grade" id="v-grade">—</div>
+          <ul id="v-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPIS -->
+    <section id="kpis">
+      <div class="kpis" id="kpi-grid"></div>
+    </section>
+
+    <!-- ALERTAS -->
+    <section class="card" id="alertas">
+      <div class="card-h">
+        <div>
+          <h2>Alertas automáticas e inconsistencias</h2>
+          <div class="h-sub">Detección automatizada de diferencias negativas relevantes, sobrantes inusuales, datos nulos y desviaciones de coherencia.</div>
+        </div>
+        <div class="actions"><span class="pill"><span class="pulse" style="background:#C5364B"></span> <span id="alert-count" class="mono">0</span> alertas activas</span></div>
+      </div>
+      <div class="alerts" id="alerts-list"></div>
+    </section>
+
+    <!-- COMPARATIVO 2025 vs 2026 -->
+    <section class="card" id="comparativo">
+      <div class="card-h">
+        <div>
+          <h2>Comparativo 2025 vs 2026</h2>
+          <div class="h-sub">Variaciones interanuales en saldos, diferencias y ajustes operativos.</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <h3>Variación de magnitudes principales</h3>
+          <div id="cmp-bars" class="chart-wrap"></div>
+        </div>
+        <div>
+          <table id="cmp-table">
+            <thead><tr><th>Concepto</th><th class="num">2025</th><th class="num">2026 YTD</th><th class="num">Δ</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TENDENCIAS -->
+    <section class="card" id="tendencias">
+      <div class="card-h">
+        <div>
+          <h2>Tendencias y comportamiento histórico</h2>
+          <div class="h-sub">Evolución de diferencias y ajustes a lo largo de las 11 conciliaciones (ene-2025 → may-2026).</div>
+        </div>
+      </div>
+      <div id="trend-chart" class="chart-wrap"></div>
+      <div class="chart-legend">
+        <div class="lk"><span class="sw" style="background:#0F1E3D"></span>Saldo teórico</div>
+        <div class="lk"><span class="sw" style="background:#0FB5AE"></span>Conteo físico</div>
+        <div class="lk"><span class="sw" style="background:#C5364B"></span>Diferencias absolutas</div>
+        <div class="lk"><span class="sw" style="background:#E08A1A"></span>Ajustes absolutos</div>
+      </div>
+    </section>
+
+    <!-- RANKING CEDIS -->
+    <section class="card" id="cedis">
+      <div class="card-h">
+        <div>
+          <h2>Ranking por sede / centro de costo</h2>
+          <div class="h-sub">Diferencias acumuladas y semaforización por CEDI a lo largo de todo el periodo consolidado.</div>
+        </div>
+        <div class="actions">
+          <span class="pill">Orden: por |Δ| descendente</span>
+        </div>
+      </div>
+      <div id="cedi-bars"></div>
+    </section>
+
+    <!-- HEATMAP -->
+    <section class="card">
+      <div class="card-h">
+        <div>
+          <h2>Heatmap · diferencias por sede × informe</h2>
+          <div class="h-sub">Mapa de calor de las diferencias por sede en cada conciliación. Rojo = faltante; verde = sobrante; gris = cuadrado.</div>
+        </div>
+      </div>
+      <div id="heatmap"></div>
+    </section>
+
+    <!-- HALLAZGOS -->
+    <section class="card" id="hallazgos">
+      <div class="card-h">
+        <div>
+          <h2>Hallazgos priorizados</h2>
+          <div class="h-sub">Diez hallazgos relevantes priorizados por impacto operativo y volumen de unidades involucradas.</div>
+        </div>
+      </div>
+      <div class="findings" id="findings-list"></div>
+    </section>
+
+    <!-- PLAN DE ACCION -->
+    <section class="card" id="plan">
+      <div class="card-h">
+        <div>
+          <h2>Plan de acción sugerido</h2>
+          <div class="h-sub">Acciones automatizadas con prioridad, criticidad, responsable sugerido y plazo de seguimiento.</div>
+        </div>
+        <div class="actions">
+          <div class="plan-tabs" id="plan-tabs">
+            <button data-tab="all" class="active">Todas</button>
+            <button data-tab="ALTA">Críticas</button>
+            <button data-tab="MEDIA">Medias</button>
+            <button data-tab="BAJA">Bajas</button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="plan-table">
+          <thead><tr>
+            <th style="width:46px">#</th>
+            <th>Acción</th>
+            <th style="width:170px">Responsable sugerido</th>
+            <th style="width:110px">Prioridad</th>
+            <th style="width:110px">Criticidad</th>
+            <th style="width:140px">Plazo</th>
+            <th style="width:120px">Indicador seguimiento</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- DIAGNOSTICO TECNICO -->
+    <section class="card" id="diagnostico">
+      <div class="card-h">
+        <div>
+          <h2>Diagnóstico técnico y financiero automatizado</h2>
+          <div class="h-sub">Interpretación operativa, coherencia documental y exposición económica estimada del proceso de conciliación.</div>
+        </div>
+      </div>
+      <div class="diag-grid">
+        <div class="diag-block">
+          <h3>Coherencia de datos (calidad)</h3>
+          <div id="diag-coherencia"></div>
+        </div>
+        <div class="diag-block">
+          <h3>Trazabilidad operativa</h3>
+          <div id="diag-traza"></div>
+        </div>
+        <div class="diag-block">
+          <h3>Diagnóstico operativo</h3>
+          <ul id="diag-op"></ul>
+        </div>
+        <div class="diag-block">
+          <h3>Lectura financiera</h3>
+          <ul id="diag-fin"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- DETALLE -->
+    <section class="card" id="detalle">
+      <div class="card-h">
+        <div>
+          <h2>Consolidado general · detalle trazable</h2>
+          <div class="h-sub">Tabla maestra con trazabilidad fila a fila. Aplica los filtros superiores para reducir el universo.</div>
+        </div>
+        <div class="actions">
+          <span class="pill"><span id="det-count" class="mono">0</span> filas visibles</span>
+          <span class="pill">Δ visible: <span id="det-dif" class="mono">0</span></span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="detail-table">
+          <thead><tr>
+            <th>Corte</th>
+            <th>Informe</th>
+            <th>Bodega</th>
+            <th>Sede / CEDI</th>
+            <th class="num">Entradas</th>
+            <th class="num">Salidas</th>
+            <th class="num">Teórico</th>
+            <th class="num">Físico</th>
+            <th class="num">Δ</th>
+            <th class="num">Sistema</th>
+            <th class="num">Ajuste</th>
+            <th>Estado</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="meta-foot">
+      <div>
+        Reglas de validación: deduplicación por (informe + bodega + corte). Hoja DashBoard excluida por no contener filas tabulares. Diferencia = Conteo físico − Saldo teórico.
+      </div>
+      <div>Documento generado para uso interno · Comité Gerencial</div>
+    </div>
+  </main>
+</div>
+
+<script src="tinas-dashboard.js"></script>
+</body>
+</html>
